@@ -1,0 +1,5 @@
+# mood-memory: 把心情 + 记忆模块挂进 profile。
+# 这个插件只提供模块和自检，不注册 UI；真正的接线在宿主代码里（见 AGENT.md）。
+- insert:
+    - id: mood-memory
+      name: 'mood-memory'

@@ -1,0 +1,72 @@
+{
+  "name": "mood-memory",
+  "version": "2.1.0",
+  "description": "给聊天机器人用的心情 + 记忆模块：七维情绪/条目判分/半衰期衰减 + 双容器记忆/核心词召回/约定过期淘汰/自动判重要性。2.0 起自带游戏接入层（泰拉瑞亚等状态文件游戏），2.1 起自带游戏技能库，并把记忆/心情核心与线上实现逐条对齐。零依赖、纯本地、不调模型。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./memory": "./src/memory.js",
+    "./mood": "./src/mood.js",
+    "./game": "./src/terraria.js",
+    "./terraria": "./src/terraria.js",
+    "./skills": "./src/skills.js",
+    "./dsh": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "keywords": [
+    "mood",
+    "memory",
+    "chatbot",
+    "qq",
+    "persona",
+    "terraria",
+    "tmodloader",
+    "game-companion",
+    "skill",
+    "技能",
+    "情感",
+    "记忆",
+    "心情",
+    "泰拉瑞亚"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node bench/run-all.mjs",
+    "bench:mood": "node bench/bench-mood.mjs",
+    "bench:dims": "node bench/bench-dims.mjs",
+    "sim:14d": "node bench/sim-14d.mjs",
+    "sim:30d": "node bench/sim-30d.mjs",
+    "demo:game": "node examples/demo-terraria.mjs",
+    "viewer": "node tools/viewer/server.mjs --file tools/viewer/demo-state.json --open"
+  },
+  "files": [
+    "lib/",
+    "src/",
+    "bench/",
+    "examples/",
+    "cordis.patch.yml",
+    "AGENT.md",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "tools/"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/<your-name>/mood-memory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/<your-name>/mood-memory/issues"
+  },
+  "homepage": "https://github.com/<your-name>/mood-memory#readme"
+}

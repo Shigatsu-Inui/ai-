@@ -1,0 +1,65 @@
+{
+  "conversations": {
+    "private:10001": {
+      "mood": {
+        "total": 76.4,
+        "updatedAt": 1793100000000,
+        "dims": { "开心": 3.1, "踏实": 1.2, "甜蜜": 2.4, "心疼": 0, "担心": 0.6, "难过": 0, "吃醋": 0.9 }
+      },
+      "memory": {
+        "importantTopics": [
+          { "text": "他答应下周三之前把稿子看完", "keys": ["稿子", "下周三"], "mentions": 3, "lastMentionAt": 1793099000000 },
+          { "text": "他说会等我、不会忘记我，这次不像玩笑", "keys": ["等我"], "mentions": 2, "lastMentionAt": 1793095000000 },
+          { "text": "我给他起了小名「小满」，他说这才像个人", "keys": ["小满"], "mentions": 1, "lastMentionAt": 1793080000000 }
+        ],
+        "activeTopics": [
+          { "text": "他说楼下新开了家火锅店，汤底有点厚", "keys": ["火锅店"], "mentions": 1, "lastMentionAt": 1793098000000 },
+          { "text": "他今天临时被叫去加班，晚饭没吃", "keys": ["加班"], "mentions": 1, "lastMentionAt": 1793092000000 },
+          { "text": "楼下那只橘猫又蹲在台阶上，我拍给他看了", "keys": ["猫"], "mentions": 2, "lastMentionAt": 1793070000000 }
+        ],
+        "memberImpressions": {
+          "阿橙": {
+            "traits": ["嘴硬但心软，被拆穿就装傻", "做后端的，最近在折腾图数据库", "喜欢猫，尤其橘猫"],
+            "interactionCount": 14,
+            "lastSeenAt": 1793099500000
+          }
+        },
+        "gameSkills": [
+          {
+            "game": "泰拉瑞亚",
+            "skill": "深层资源探索",
+            "text": "挖矿、找宝箱时别长期停留浅层刨土，优先找安全通路去洞穴层",
+            "keys": ["深层资源探索", "探索", "挖矿"],
+            "action": "explore",
+            "uses": 2,
+            "lastUsedAt": 1793097000000,
+            "createdAt": 1793090000000
+          },
+          {
+            "game": "泰拉瑞亚",
+            "skill": "采矿",
+            "text": "对着矿脉长按左键，矿石会进独立背包",
+            "keys": ["采矿", "矿脉", "镐子"],
+            "action": "mine",
+            "uses": 0,
+            "lastUsedAt": 0,
+            "createdAt": 1793099000000
+          }
+        ]
+      }
+    },
+    "group:20002": {
+      "mood": { "total": 62.1, "updatedAt": 1793090000000, "dims": { "开心": 0.8, "踏实": 0.4, "甜蜜": 0.2, "心疼": 0, "担心": 0, "难过": 0.3, "吃醋": 0 } },
+      "memory": {
+        "importantTopics": [],
+        "activeTopics": [
+          { "text": "群里在聊显卡价格，涨得离谱", "keys": ["显卡"], "mentions": 1, "lastMentionAt": 1793088000000 }
+        ],
+        "memberImpressions": {
+          "老周": { "traits": ["话少，爱甩表情包", "在群里调参数，语气像在做测试"], "interactionCount": 5, "lastSeenAt": 1793085000000 },
+          "小林": { "traits": ["学生，有日语课", "爱发同一张黑猫表情"], "interactionCount": 3, "lastSeenAt": 1793079000000 }
+        }
+      }
+    }
+  }
+}

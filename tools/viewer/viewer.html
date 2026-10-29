@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>心情 · 记忆小窗</title>
+<style>
+  :root{
+    --bg:#0f1319; --panel:#161c25; --panel2:#1b2330; --line:#25303e;
+    --txt:#e6ecf5; --dim:#8b98a9; --accent:#7ad4ff; --warn:#ffc46b;
+    --good:#78d6a0; --bad:#ff8080;
+  }
+  *{box-sizing:border-box}
+  body{margin:0 auto;padding:12px;max-width:480px;background:var(--bg);color:var(--txt);
+       font:13px/1.5 "Microsoft YaHei UI","Microsoft YaHei",system-ui,sans-serif}
+  .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:6px}
+  .title{font-size:15px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
+  .title small{color:var(--dim);font-weight:400;margin-left:6px;font-size:11px}
+  select,button{background:var(--panel2);color:var(--txt);border:1px solid var(--line);
+    border-radius:7px;padding:4px 8px;font-size:12px;font-family:inherit;cursor:pointer}
+  button:hover,select:hover{border-color:#3b4b60}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin-bottom:10px;overflow:hidden}
+  .sec{display:flex;align-items:center;justify-content:space-between;gap:8px;
+       padding:10px 11px;cursor:pointer;user-select:none}
+  .sec:hover{background:#1a2230}
+  .sec b{font-size:12.5px}
+  .sec .right{display:flex;align-items:center;gap:8px;color:var(--dim);font-size:11px}
+  .chev{display:inline-block;transition:transform .15s;color:#7b8798;font-size:11px}
+  .card.collapsed .chev{transform:rotate(-90deg)}
+  .card.collapsed .body{display:none}
+  .body{padding:0 11px 11px}
+  .total{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+  .num{font-size:34px;font-weight:800;line-height:1}
+  .num small{font-size:13px;color:var(--dim);font-weight:400}
+  .band{font-size:13px;padding:2px 9px;border-radius:20px;background:#22303f;color:var(--accent)}
+  .hint{color:var(--dim);font-size:11.5px;margin:6px 0 0}
+  .bar{height:7px;border-radius:6px;background:#202a36;overflow:hidden}
+  .bar>i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#3f8fd0,#7ad4ff)}
+  .dim{display:grid;grid-template-columns:44px 1fr 40px;align-items:center;gap:7px;margin:6px 0}
+  .dim b{font-weight:600;color:#cfd8e6;font-size:12px}
+  .dim .bar{height:6px}
+  .dim .v{text-align:right;color:var(--dim);font-variant-numeric:tabular-nums;font-size:11.5px}
+  .dim.on .v{color:var(--warn);font-weight:700}
+  .dim.on b{color:var(--warn)}
+  .eff{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);color:#d7c39b;font-size:11.5px}
+  .params{margin-top:8px;font-size:11.5px;color:var(--dim)}
+  .params summary{cursor:pointer;color:#7fa6c4;outline:none}
+  .params summary:hover{color:var(--accent)}
+  .params table{width:100%;border-collapse:collapse;margin-top:6px}
+  .params th,.params td{text-align:left;padding:3px 4px;border-bottom:1px solid #1e2733}
+  .params th{color:#8b98a9;font-weight:500}
+  .params tr.hot td{color:var(--warn)}
+  .params .note{margin-top:5px;color:#6b7787;font-size:10.5px}
+  .item{padding:7px 0;border-top:1px solid #1e2733}
+  .item:first-child{border-top:none}
+  .item .t{font-size:12.5px;color:#dfe7f2;word-break:break-word}
+  .meta{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;color:var(--dim);font-size:10.5px}
+  .chip{background:#22303d;color:#9fd4ef;border-radius:5px;padding:1px 6px;font-size:10.5px}
+  .empty{color:#6b7787;font-size:11.5px;padding:6px 0}
+  .person{padding:7px 0;border-top:1px solid #1e2733}
+  .person:first-child{border-top:none}
+  .person .name{font-size:12.5px;color:#e8eef8;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+  .person .name span{color:var(--dim);font-weight:400;font-size:10.5px;white-space:nowrap}
+  .person ul{margin:4px 0 0;padding-left:16px;color:#c6cfdd;font-size:11.5px}
+  .person li{margin:2px 0;word-break:break-word}
+  .foot{color:#5f6b7a;font-size:10.5px;margin-top:4px;display:flex;justify-content:center;gap:14px;align-items:center}
+  .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:5px;vertical-align:1px}
+  .dot.err{background:var(--bad)}
+  .link{cursor:pointer;text-decoration:underline}
+  .link:hover{color:#8fa0b5}
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="title">心情 · 记忆 <small id="keyLabel"></small></div>
+  <div style="display:flex;gap:6px">
+    <select id="keySel"></select>
+    <button id="refresh">刷新</button>
+  </div>
+</div>
+
+<div class="card" id="card-mood">
+  <div class="sec" data-toggle="mood">
+    <b>心情 · 七维</b>
+    <div class="right"><span id="moodBadge">--</span><span class="chev">▼</span></div>
+  </div>
+  <div class="body">
+    <div class="total">
+      <div class="num" id="total">--<small>/100</small></div>
+      <div class="band" id="band">--</div>
+    </div>
+    <div class="bar"><i id="totalBar" style="width:0%"></i></div>
+    <div class="hint" id="hint">--</div>
+    <div id="dims" style="margin-top:9px"></div>
+    <div class="eff" id="eff" style="display:none"></div>
+    <details class="params">
+      <summary>七维参数（阈值 / 半衰期）</summary>
+      <table>
+        <tr><th>维度</th><th>阈值</th><th>半衰期</th></tr>
+        <tr><td>开心</td><td>1.5</td><td>90 分</td></tr>
+        <tr><td>踏实</td><td>1.5</td><td>90 分</td></tr>
+        <tr><td>甜蜜</td><td>1.5</td><td>90 分</td></tr>
+        <tr><td>心疼</td><td>1.5</td><td>90 分</td></tr>
+        <tr><td>担心</td><td>1.5</td><td>90 分</td></tr>
+        <tr><td>难过</td><td>1.5</td><td>90 分</td></tr>
+        <tr class="hot"><td><b>吃醋</b></td><td><b>0.9</b></td><td><b>60 分</b></td></tr>
+      </table>
+      <div class="note">六维加减分 ×0.85；吃醋单次 ×2（最多 +2）。</div>
+    </details>
+  </div>
+</div>
+
+<div class="card" id="card-important">
+  <div class="sec" data-toggle="important">
+    <b>重要条目</b>
+    <div class="right"><span id="impCount">0</span><span class="chev">▼</span></div>
+  </div>
+  <div class="body"><div id="important"><div class="empty">加载中…</div></div></div>
+</div>
+
+<div class="card" id="card-active">
+  <div class="sec" data-toggle="active">
+    <b>普通条目</b>
+    <div class="right"><span id="actCount">0</span><span class="chev">▼</span></div>
+  </div>
+  <div class="body"><div id="active"><div class="empty">加载中…</div></div></div>
+</div>
+
+<div class="card" id="card-skills">
+  <div class="sec" data-toggle="skills">
+    <b>游戏技能</b>
+    <div class="right"><span id="sklCount">0</span><span class="chev">▼</span></div>
+  </div>
+  <div class="body"><div id="skills"><div class="empty">加载中…</div></div></div>
+</div>
+
+<div class="card" id="card-people">
+  <div class="sec" data-toggle="people">
+    <b>印象</b>
+    <div class="right"><span id="pplCount">0</span><span class="chev">▼</span></div>
+  </div>
+  <div class="body"><div id="people"><div class="empty">加载中…</div></div></div>
+</div>
+
+<div class="foot">
+  <span><span class="dot" id="dot"></span><span id="stamp">未连接</span></span>
+  <span class="link" id="foldAll">全部收起</span>
+</div>
+
+<script>
+const DIMS = ['开心','踏实','甜蜜','心疼','担心','难过','吃醋'];
+const FOLD_KEY = 'moodviewer_folded';
+const SECTIONS = ['mood','important','active','skills','people'];
+let folded = new Set(JSON.parse(localStorage.getItem(FOLD_KEY) || '[]'));
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let DATA = null;
+let KEY = '';
+
+function ago(t){
+  if (!t) return '';
+  const d = Date.now() - Number(t);
+  if (d < 0) return '';
+  if (d < 60000) return '刚刚';
+  if (d < 3600000) return Math.round(d/60000) + ' 分钟前';
+  if (d < 86400000) return Math.round(d/3600000) + ' 小时前';
+  return Math.round(d/86400000) + ' 天前';
+}
+
+function applyFold(){
+  SECTIONS.forEach((id) => {
+    const card = $('card-' + id);
+    if (card) card.classList.toggle('collapsed', folded.has(id));
+  });
+  $('foldAll').textContent = folded.size >= SECTIONS.length ? '全部展开' : '全部收起';
+}
+
+$('foldAll').addEventListener('click', () => {
+  if (folded.size >= SECTIONS.length) folded.clear();
+  else SECTIONS.forEach(k => folded.add(k));
+  localStorage.setItem(FOLD_KEY, JSON.stringify([...folded]));
+  applyFold();
+});
+
+document.querySelectorAll('.sec[data-toggle]').forEach((el) => {
+  el.addEventListener('click', () => {
+    const id = el.dataset.toggle;
+    if (folded.has(id)) folded.delete(id); else folded.add(id);
+    localStorage.setItem(FOLD_KEY, JSON.stringify([...folded]));
+    applyFold();
+  });
+});
+
+function renderMood(m){
+  if (!m) {
+    $('total').innerHTML = '--<small>/100</small>';
+    $('band').textContent = '无数据';
+    $('moodBadge').textContent = '--';
+    $('hint').textContent = '这个会话没有心情数据';
+    $('dims').innerHTML = '';
+    $('eff').style.display = 'none';
+    return;
+  }
+  const total = Number(m.total) || 0;
+  $('total').innerHTML = total.toFixed(1) + '<small>/100</small>';
+  $('totalBar').style.width = Math.max(0, Math.min(100, total)) + '%';
+  const band = total >= 80 ? '欢喜' : total >= 60 ? '平稳' : total >= 40 ? '低落' : total >= 20 ? '沉' : '闷';
+  $('band').textContent = band;
+  $('moodBadge').textContent = total.toFixed(0) + ' · ' + band;
+  const hints = { 欢喜:'心情很好：可以多说两句，愿意主动延伸', 平稳:'正常状态：有事说事', 低落:'提不起劲：话少一点', 沉:'不太想说话：3~8 个字', 闷:'心里堵着：冷、短、敷衍' };
+  $('hint').textContent = hints[band] || '';
+
+  const dims = m.dims || {};
+  $('dims').innerHTML = DIMS.map(d => {
+    const v = Number(dims[d]) || 0;
+    const on = v >= (d === '吃醋' ? 0.9 : 1.5);
+    const w = Math.max(0, Math.min(100, v / 8 * 100));
+    return `<div class="dim ${on?'on':''}"><b>${d}</b>
+      <div class="bar"><i style="width:${w}%;background:${on?'linear-gradient(90deg,#c98a3a,#ffc46b)':'#3a4a5c'}"></i></div>
+      <div class="v">${v.toFixed(1)}</div></div>`;
+  }).join('');
+
+  const active = DIMS.filter(d => (Number(dims[d])||0) >= (d === '吃醋' ? 0.9 : 1.5));
+  if (active.length){
+    $('eff').style.display = 'block';
+    $('eff').textContent = '生效情绪：' + active.map(d => d + ' ' + Number(dims[d]).toFixed(1)).join(' · ');
+  } else { $('eff').style.display = 'none'; }
+}
+
+function renderItems(list, el){
+  if (!list || !list.length){ el.innerHTML = '<div class="empty">（空）</div>'; return; }
+  el.innerHTML = list.map(x => {
+    const keys = (x.keys || []).map(k => `<span class="chip">${esc(k)}</span>`).join('');
+    const meta = [
+      keys,
+      `<span>提过 ${x.mentions || 1} 次</span>`,
+      x.lastMentionAt ? `<span>${ago(x.lastMentionAt)}</span>` : ''
+    ].filter(Boolean).join('');
+    return `<div class="item"><div class="t">${esc(x.text)}</div><div class="meta">${meta}</div></div>`;
+  }).join('');
+}
+
+function renderSkills(list){
+  if (!list || !list.length){ $('skills').innerHTML = '<div class="empty">（空：还没学会技能）</div>'; return; }
+  $('skills').innerHTML = list.map(s => {
+    const keys = (s.keys || []).map(k => `<span class="chip">${esc(k)}</span>`).join('');
+    const meta = [
+      keys,
+      s.action ? `<span>指令 ${esc(s.action)}</span>` : '',
+      `<span>用过 ${Number(s.uses) || 0} 次</span>`,
+      s.lastUsedAt ? `<span>${ago(s.lastUsedAt)}用过</span>` : (s.createdAt ? `<span>记于 ${ago(s.createdAt)}</span>` : '')
+    ].filter(Boolean).join('');
+    const name = `${s.game ? esc(s.game) + '·' : ''}${esc(s.skill || '技能')}`;
+    return `<div class="item"><div class="t">${name}：${esc(s.text || '')}</div><div class="meta">${meta}</div></div>`;
+  }).join('');
+}
+
+function renderPeople(imps){
+  const names = Object.keys(imps || {});
+  if (!names.length){ $('people').innerHTML = '<div class="empty">（空）</div>'; return; }
+  $('people').innerHTML = names.map(n => {
+    const im = imps[n] || {};
+    const traits = (im.traits || []).map(t => esc(typeof t === 'string' ? t : (t.text || ''))).filter(Boolean);
+    const lis = traits.length
+      ? '<ul>' + traits.map(t => `<li>${t}</li>`).join('') + '</ul>'
+      : '<div class="empty">（无）</div>';
+    return `<div class="person"><div class="name">${esc(n)}<span>互动 ${im.interactionCount || 0} 次 · ${ago(im.lastSeenAt)}</span></div>${lis}</div>`;
+  }).join('');
+}
+
+function render(){
+  if (!DATA || !DATA.conversations) return;
+  const keys = Object.keys(DATA.conversations);
+  if (!keys.length) {
+    $('stamp').textContent = '数据文件里没有会话';
+    $('dot').className = 'dot err';
+    return;
+  }
+  if (!KEY || !DATA.conversations[KEY]) KEY = keys[0];
+  $('keySel').innerHTML = keys.map(k => `<option value="${esc(k)}"${k===KEY?' selected':''}>${esc(k.replace('private:','私 ').replace('group:','群 '))}</option>`).join('');
+  $('keyLabel').textContent = KEY;
+
+  const c = DATA.conversations[KEY];
+  renderMood(c.mood);
+  renderItems(c.importantTopics, $('important'));
+  renderItems(c.activeTopics, $('active'));
+  renderSkills(c.gameSkills);
+  renderPeople(c.memberImpressions);
+  $('impCount').textContent = (c.importantTopics || []).length + ' 条';
+  $('actCount').textContent = (c.activeTopics || []).length + ' 条';
+  $('sklCount').textContent = (c.gameSkills || []).length + ' 条';
+  $('pplCount').textContent = Object.keys(c.memberImpressions || {}).length + ' 人';
+}
+
+let timer = null;
+async function tick(){
+  try {
+    const r = await fetch('/api/state', { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    DATA = await r.json();
+    if (DATA && DATA.ok === false) throw new Error(DATA.error || '读不到数据文件');
+    render();
+    $('dot').className = 'dot';
+    $('stamp').textContent = '已更新 ' + new Date().toLocaleTimeString('zh-CN', {hour12:false});
+  } catch (e) {
+    $('dot').className = 'dot err';
+    $('stamp').textContent = String(e.message || e);
+  }
+}
+
+$('refresh').addEventListener('click', tick);
+$('keySel').addEventListener('change', (e) => { KEY = e.target.value; render(); });
+
+applyFold();
+tick();
+timer = setInterval(tick, 5000);
+</script>
+</body>
+</html>
